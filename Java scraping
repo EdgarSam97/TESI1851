@@ -1,0 +1,63 @@
+package scraper;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+public class scrap {
+
+    public static void main(String[] Args) {
+
+        try {
+            String fichero = "C:\\Users\\EdgarSam\\Desktop\\Paginas.txt"; 
+            FileInputStream fis = new FileInputStream(fichero);
+            InputStreamReader isr = new InputStreamReader(fis, "utf8");
+            BufferedReader br = new BufferedReader(isr);
+
+            String linea;
+            File arch = new File("C:\\Users\\EdgarSam\\Desktop\\Noticias");
+            arch.mkdir();
+
+            while ((linea = br.readLine()) != null) {
+                System.out.println(linea);
+                try {
+                    String lineas = linea.substring(6);
+                    File arch1 = new File("C:\\Users\\EdgarSam\\Desktop\\Noticias/" + lineas + ".txt");
+                    arch1.createNewFile();
+                    FileWriter archivo = new FileWriter(arch1, true);
+                    PrintWriter pw = new PrintWriter(archivo);
+                    
+                    Document doc = Jsoup.connect(linea).get();
+                    String title = doc.title();
+                    System.out.println("Titulo: " + title);
+                    Elements h2 = doc.select("h2>a");
+                    Elements h3 = doc.select("h3>a");
+
+                    for (Element titulo : h2) {
+                        System.out.println(titulo.attr("title"));
+                        pw.println(titulo.attr("title"));
+                    }
+                    for (Element titul : h3) {
+                        System.out.println(titul.attr("title"));
+                        pw.println(titul.attr("title"));
+                    }
+                    archivo.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            fis.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
